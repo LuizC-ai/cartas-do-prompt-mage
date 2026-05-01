@@ -38,10 +38,8 @@ export default function Contato() {
       <div className="max-w-2xl mx-auto px-4 md:px-6 py-8 md:py-12 bg-yellow-50" style={{ backgroundColor: '#f5e6d3' }}>
         {/* Botão voltar */}
         <div className="mb-8">
-          <Link href="/">
-            <a className="text-sm font-bold underline hover:no-underline">
-              ← Voltar para as Cartas
-            </a>
+          <Link href="/" className="text-sm font-bold underline hover:no-underline">
+            ← Voltar para as Cartas
           </Link>
         </div>
 
@@ -150,10 +148,8 @@ export default function Contato() {
 
         {/* Navegação */}
         <div className="text-center space-y-4">
-          <Link href="/">
-            <a className="px-6 py-3 bg-black text-yellow-50 border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:text-black transition-all inline-block" style={{ fontFamily: "'Courier Prime', 'Courier New', monospace" }}>
-              Voltar para Cartas
-            </a>
+          <Link href="/" className="px-6 py-3 bg-black text-yellow-50 border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:text-black transition-all inline-block" style={{ fontFamily: "'Courier Prime', 'Courier New', monospace" }}>
+            Voltar para Cartas
           </Link>
         </div>
       </div>

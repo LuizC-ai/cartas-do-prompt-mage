@@ -64,10 +64,8 @@ export default function Home() {
                 {post.excerpt}
               </p>
 
-              <Link href={`/carta/${post.slug}`}>
-                <a className="px-6 py-3 bg-black text-yellow-50 border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:text-black transition-all inline-block" style={{ fontFamily: "'Courier Prime', 'Courier New', monospace" }}>
-                  Ler a Carta Completa
-                </a>
+              <Link href={`/carta/${post.slug}`} className="px-6 py-3 bg-black text-yellow-50 border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:text-black transition-all inline-block" style={{ fontFamily: "'Courier Prime', 'Courier New', monospace" }}>
+                Ler a Carta Completa
               </Link>
             </article>
           ))}
@@ -79,15 +77,11 @@ export default function Home() {
         {/* Rodapé com navegação */}
         <div className="text-center space-y-4">
           <div className="flex flex-col md:flex-row gap-4 justify-center">
-            <Link href="/sobre">
-              <a className="px-6 py-3 bg-black text-yellow-50 border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:text-black transition-all inline-block" style={{ fontFamily: "'Courier Prime', 'Courier New', monospace" }}>
-                Sobre o Autor
-              </a>
+            <Link href="/sobre" className="px-6 py-3 bg-black text-yellow-50 border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:text-black transition-all inline-block" style={{ fontFamily: "'Courier Prime', 'Courier New', monospace" }}>
+              Sobre o Autor
             </Link>
-            <Link href="/contato">
-              <a className="px-6 py-3 bg-black text-yellow-50 border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:text-black transition-all inline-block" style={{ fontFamily: "'Courier Prime', 'Courier New', monospace" }}>
-                Entrar em Contato
-              </a>
+            <Link href="/contato" className="px-6 py-3 bg-black text-yellow-50 border-2 border-black font-bold uppercase tracking-wider hover:bg-yellow-50 hover:text-black transition-all inline-block" style={{ fontFamily: "'Courier Prime', 'Courier New', monospace" }}>
+              Entrar em Contato
             </Link>
           </div>
         </div>
