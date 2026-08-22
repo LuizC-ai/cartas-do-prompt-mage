@@ -19,6 +19,279 @@ export interface Post extends PostMetadata {
 // Posts de exemplo - podem ser substituídos por importação do Obsidian
 export const POSTS: Post[] = [
   {
+    title: "Passei Uma Sessão Inteira Trabalhando no Repositório Errado. E o Claude Não Teve Culpa Nenhuma.",
+    date: "21 de agosto de 2026",
+    excerpt: "Uma sessão inteira no repo errado. Um grep que não achou o que estava lá. 137 testes verdes cobrindo um commit que mentia. Três dores, duas skills.",
+    slug: "duas-skills-que-nasceram-de-tres-erros",
+    author: "Luiz",
+    location: "Minas Gerais, Brasil",
+    content: `*De: Minas Gerais, sexta-feira*
+
+Caro amigo,
+
+Vou começar contando três besteiras que eu fiz.
+
+Não são besteiras de iniciante. São besteiras de quem já sabe programar, já usa IA todo dia, e mesmo assim tomou na cara.
+
+Se você usa Claude Code em projeto de verdade, aposto que pelo menos uma delas já aconteceu com você. Talvez ainda esteja acontecendo e você não sabe.
+
+Escuta só.
+
+---
+
+## Besteira nº 1: uma sessão inteira no repositório errado
+
+Sessão inteira. Do começo ao fim.
+
+Eu pedindo, a IA lendo arquivo, propondo, editando. Tudo funcionando lindo.
+
+Só que na minha máquina existia mais de uma cópia daquele projeto. E eu estava mexendo na cópia morta.
+
+Sabe o que é pior? A IA não tinha como saber. Ela abriu o caminho que eu dei. Fez exatamente o que eu pedi.
+
+O trabalho estava certo. O alvo é que estava errado.
+
+---
+
+## Besteira nº 2: o grep me disse que não existia
+
+Eu procurei por uma regra no código. Grep por um nome de método.
+
+Não achou nada no lugar que eu esperava. Conclusão óbvia: a regra não é aplicada ali.
+
+Errado.
+
+O método estava lá. Só que escrito de outro jeito — passado como referência, não como chamada. Meu grep procurava uma forma sintática. O código usava a outra.
+
+Aquele "não achou" virou três conclusões erradas, uma empilhada na outra. E as três estavam escritas com uma segurança linda.
+
+---
+
+## Besteira nº 3: 137 testes verdes cobrindo um commit que mentia
+
+Esse é o meu favorito, porque é o mais assustador.
+
+A suíte inteira verde. Cento e trinta e sete testes passando.
+
+E o commit afirmava uma coisa que não era verdade.
+
+Como? Porque os testes cobriam o pedaço que tinha sido alterado. O caminho real — o caso de uso completo, entrando pela porta da frente — ninguém exercitou.
+
+Verde no pedaço não é verde no sistema. Verdade.
+
+---
+
+## O que essas três têm em comum
+
+Demorei pra enxergar. Mas quando enxerguei, não teve como desver.
+
+Em nenhuma das três a IA errou.
+
+Ela leu o arquivo que existia. Ela rodou o grep que eu mandei. Ela rodou os testes que estavam lá. Executou tudo direitinho.
+
+> O ERRO NÃO ESTAVA NA EXECUÇÃO. ESTAVA NO PEDIDO — QUE JÁ NASCEU TORTO, E NINGUÉM CONFERIU ANTES DE SAIR CODANDO.
+
+Tá comigo? Porque aqui mora o pulo do gato.
+
+A gente melhorou muito o "como pedir pra IA escrever código". Prompt melhor, contexto melhor, modelo melhor.
+
+E quase ninguém trabalhou no que vem **antes** disso: confirmar o alvo, provar o terreno, achar o que você nem sabe que não sabe.
+
+Aí a IA fica excelente em construir a coisa errada, muito rápido, com uma confiança enorme.
+
+---
+
+## Existem três jeitos padronizados de isso dar errado
+
+Isso não é achismo meu. São falhas que já têm nome, e nomear ajuda a enxergar:
+
+- **goal drift** — o objetivo vai perdendo fidelidade turno após turno. Piora depois que a conversa é compactada, porque o que você combinou lá atrás simplesmente sumiu do contexto.
+- **self-preferential bias** — quem escreveu o código é quem julga o código. E aprova. Toda vez.
+- **agentic laziness** — para no item 20 de 50 e declara "pronto".
+
+Olha as minhas três besteiras de novo e você vai ver as três falhas ali dentro, inteirinhas.
+
+---
+
+## Então eu parei e escrevi duas skills
+
+Não pra deixar a IA mais esperta. Ela já é.
+
+Pra deixar o **pedido** menos torto antes de virar código.
+
+São duas, e elas se encaixam numa ordem: **/lapidar-zero** roda antes de tudo. **/lapidar** é a esteira de desenho. Depois delas vem o TDD.
+
+Vou te mostrar o que cada uma faz de concreto.
+
+---
+
+## A primeira: /lapidar-zero
+
+Ela roda **antes de qualquer código ou plano**. A primeira frase que ela diz é: *"não escrevo código até você liberar."*
+
+E aí ela passa por seis fases. Sem pular.
+
+**Fase 0 — o alvo.** Antes de ler uma linha de código, responde: qual repositório (caminho absoluto), qual branch, tem mais de uma cópia do projeto na máquina, tem produção rodando, tem trabalho não commitado que pode ser destruído.
+
+Essa fase existe por causa da minha besteira nº 1. Custa trinta segundos e teria salvado um dia inteiro.
+
+**Fase 1 — recon.** Vários subagentes disparados na mesma resposta, cada um num domínio, todos **somente leitura**. Nenhum deles tem ferramenta de escrita antes do gate. A promessa de "não escrevo nada ainda" vira restrição de verdade, não boa intenção.
+
+E tem uma regra de busca que nasceu direto da besteira nº 2:
+
+\`\`\`
+Procure pelo CAMINHO DE CHAMADA,
+não pelo que a função checa.
+
+E busque em pelo menos DUAS
+formas sintáticas:
+
+   metodo(     e     ::metodo
+\`\`\`
+
+Tem outra regra dessa fase que eu aprendi apanhando: quando um agente não acha algo no repositório, ele precisa perguntar antes de concluir — *isso viveria no git?* Container Docker, variável de ambiente, serviço do sistema, credencial: nada disso mora no repositório. Já declarei que um harness de teste "não existia" quando ele era um container parado na minha própria máquina.
+
+**Fase 2 — extração socrática.** Uma pergunta por mensagem. Sempre com recomendação e trade-off, nunca um menu neutro.
+
+E tem um detalhe que mudou meu jogo. Existe um tipo de dúvida que **não** se resolve perguntando: é aquela do "eu sei quando eu vejo". Design, formato, layout.
+
+Pra essa, a regra é parar de perguntar e mostrar. Gera quatro direções radicalmente diferentes e deixa a pessoa reagir.
+
+**Fase 3 — o adversário.** Um subagente cuja missão não é revisar. É **refutar**. Default dele: "isso está errado, prove o contrário."
+
+A regra que faz isso funcionar cabe numa linha:
+
+> O VERIFICADOR NUNCA É O AUTOR.
+
+Junto vem o blindspot pass, que é a pergunta que ninguém faz sozinho: *o que essa decisão causa que eu não olhei?*
+
+Porque decisão certa também gera estrago. Eu religuei uma suíte de testes que estava desligada — decisão certa — e inflei conta de nuvem sem perceber. Efeito de segunda ordem não aparece se você não for atrás dele.
+
+**Fase 4 — os treze níveis, especificados antes do código.** Caminho feliz, beiradas, lixo na entrada, lista vazia, concorrência, efeito real no banco, asserção negativa, caminho infeliz que parece feliz, mutation testing, e mais quatro pra sistema probabilístico.
+
+Mas o que faz diferença não é a lista. É a regra que vem junto:
+
+> NÍVEL SEM ORÁCULO EXECUTÁVEL NÃO CONTA COMO ESPECIFICADO.
+
+Oráculo é o comando que prova. A suíte, a query no banco, a chamada direta na API, o browser. Se você não sabe qual comando fecha o loop daquele nível, você não especificou nada — escreveu um desejo.
+
+**Fase 5 — o gate.** Aqui a skill **pede** liberação. Quem libera é você.
+
+E tem uma invenção nossa que eu recomendo com força: um quiz. Três a cinco perguntas sobre o que muda de comportamento — e **você** precisa acertar antes de liberar.
+
+Parece besteira. Não é. Checklist que o autor preenche é fácil demais de aprovar sem ler. O quiz inverte: se você não sabe responder o que o próprio sistema vai fazer, ninguém está pronto pra codar.
+
+Na primeira vez que rodei, o quiz pegou um erro de negócio meu que nenhum adversário técnico teria visto.
+
+E se você erra uma pergunta, o problema não é seu. Ou eu não expliquei, ou eu não entendi. Volta a fase.
+
+**Fase 6 — TDD, e só depois do gate.**
+
+> NENHUM CÓDIGO DE PRODUÇÃO SEM UM TESTE FALHANDO ANTES.
+
+Com uma exigência que veio da besteira nº 3: o teste vive no **caminho real**, o caso de uso completo pelo ponto de entrada. Não no pedacinho que você acabou de mexer.
+
+---
+
+## A segunda: /lapidar
+
+Essa é a esteira de desenho. Ela conserta dois vícios.
+
+**Vício 1: perguntar ao humano o que o repositório responde.**
+
+A lei dela é dura, e eu gosto:
+
+> Se a resposta está no repo, no banco, no log ou no Docker, perguntar é PROIBIDO. Vá buscar.
+
+"Onde fica o gate de pagamento?" é obrigação da máquina descobrir. "O usuário pode esperar dois segundos a mais?" é pergunta legítima pra você — porque depende do que você quer, não do que existe.
+
+**Vício 2: gastar esteira pesada num CRUD de vinte linhas.**
+
+Por isso ela tem marchas, e classifica pelo **raio de dano do diff** — não pelo módulo que você tocou:
+
+\`\`\`
+ESBOÇO
+ reversível por deploy, não mexe
+ em estado salvo nem em contrato
+ → recomendação na conversa.
+   Zero arquivo, zero esteira.
+
+PADRÃO  (o default)
+ muda contrato, schema ou enum
+ → terreno + até 3 perguntas
+   + spec curta + matriz
+
+BLINDAGEM
+ irreversível sem intervenção
+ manual: move dinheiro, altera
+ sessão/auth, backfill em produção
+ → PADRÃO + blindspot + adversário
+   em processo separado + matriz
+   com execução PROVADA
+\`\`\`
+
+Ela declara a marcha em quatro linhas e espera um OK de uma palavra. Você digita "esboço" e a esteira inteira cai na hora, sem discussão.
+
+---
+
+## "Isso não é cerimônia demais?"
+
+Foi a primeira coisa que eu pensei também. E é uma objeção justa.
+
+Duas respostas.
+
+A primeira: a própria **/lapidar-zero** tem uma saída. Se as primeiras fases mostrarem que não existe nada de desconhecido e o risco é baixo, ela declara isso e propõe o **gate curto** — alvo confirmado, oráculos nomeados, liberação, tudo numa mensagem só. Cerimônia é meio, não fim.
+
+A segunda é a conta. Trinta segundos confirmando o repositório contra um dia inteiro no repositório errado.
+
+Não é lentidão. É a coisa mais rápida que eu faço no dia.
+
+---
+
+## E quando um erro escapar mesmo assim
+
+Vai escapar. Vaza sempre um.
+
+Aí vale o hábito que eu considero o mais importante de todos:
+
+> QUANDO A IA ERRA, NÃO PEÇA PRA ELA FAZER DIFERENTE. MANDE ESCREVER A REGRA NUM ARQUIVO.
+
+Correção no chat conserta um turno. Regra escrita conserta todos os próximos.
+
+E antes de escrever prosa, pergunta se o erro cabe numa regra **executável** — um lint, um passo de CI, um teste. Porque aí a classe inteira do erro morre sozinha, pra sempre, sem depender de alguém lembrar de ler.
+
+---
+
+## Como começar sem se comprometer com nada
+
+Não instala as duas de uma vez. Não muda seu jeito de trabalhar hoje.
+
+Faz só isto, na próxima feature que você for pedir pra IA:
+
+Antes de qualquer outra coisa, mande ela responder quatro perguntas: qual é o caminho absoluto do repositório, qual é a branch, existe outra cópia desse projeto na máquina, e tem alguma coisa não commitada aí.
+
+Trinta segundos. É a Fase 0 inteira, de graça, sem instalar nada.
+
+Se isso te salvar uma vez — e vai salvar — aí você pega o resto.
+
+As duas skills estão aqui:
+
+\`\`\`
+github.com/LuizC-ai/lapidar
+\`\`\`
+
+São arquivos de texto. Você lê, discorda, corta o que não serve, adapta pro seu projeto. É pra isso que estão lá.
+
+Fim de papo.
+
+P.S. Se você só for levar uma frase daqui, leva esta: **o verificador nunca é o autor**. Vale pra IA revisando o próprio código, e vale pra você revisando o seu. É a coisa mais barata de implementar e a que mais pega defeito.
+
+P.S. 2 — Repara que nenhuma das minhas três besteiras foi culpa de modelo ruim. Nenhuma se resolveria trocando de IA, nem esperando a próxima versão. Todas se resolviam com trinta segundos de conferência antes de começar. É por isso que essas skills existem, e é por isso que elas rodam ANTES, e não depois.
+
+Atenciosamente,
+Luiz — que já perdeu um dia inteiro no repositório errado pra você não precisar`,
+  },
+  {
     title: "Eu Achava Que Entendia Como uma IA Funciona — Até Perguntar o Que Acontece Depois do Enter",
     date: "21 de agosto de 2026",
     excerpt: "Token, probabilidade, função, self. Eu travava em cada uma dessas palavras — então fui desmontando uma por uma até virarem peças que dá pra enxergar.",
